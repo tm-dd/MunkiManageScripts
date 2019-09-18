@@ -67,7 +67,7 @@
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 "commercial_standard","Microsoft Remote Desktop","network","The Remote Desktop Client from Microsoft for Mac OS X. Can also connect to the Linux based RDP Server XRDP.","Microsoft Remote Desktop","https://itunes.apple.com/de/app/microsoft-remote-desktop/id715768417","optional_installs","10.9","10.15.99",,,,,,,,,,,,"commercial-standard",,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
-"commercial_std_10.13-14","Keynote","office","Keynote make it easy to create presentations.<br>","Keynote","http://www.apple.com/keynote/","optional_installs","10.13","10.15.99",,,,,,,,,,,,"commercial-standard","Software wird von Munki bei Deinstallation nicht gefunden. ",,,,,,,,,,,,,,
+"commercial_std_10_13_14","Keynote","office","Keynote make it easy to create presentations.<br>","Keynote","http://www.apple.com/keynote/","optional_installs","10.13","10.15.99",,,,,,,,,,,,"commercial-standard","Software wird von Munki bei Deinstallation nicht gefunden. ",,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
 "commercial_standard_10.13","Apple Configurator 2","system","A tool to create configuration profiles for Apple devices. Profiles allows to deploy configurations and settings in an easy way.","Apple Configurator 2","https://itunes.apple.com/de/app/apple-configurator-2/id1037126344","optional_installs","10.13","10.15.99",,,,,,,,,,,,"commercial-standard",,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
