@@ -5,9 +5,9 @@ I currently manage more the hundert Macs with nearly 400 possible Applications, 
 
 ## How it works:
 
-The script **create_munki_import_file_for_packages.sh** create scripts for importing and removing of your defined software in "munki_infos.csv".
+The script **create_munki_import_and_remove_scripts.sh** create scripts for importing and removing of your defined software in "munki_infos.csv".
 
-A different script **create_munki_manifests.sh** read the rules from "munki_manifests.csv" and create induvidual manifests for your Macs.
+A different script **update_manifests.sh** read the rules from "munki_manifests.csv" and create induvidual manifests for your Macs.
 
 For **all of your applications** you can **define the following settings** in the CSV file "munki_infos.csv" for you Munki repository (and self service):
 
