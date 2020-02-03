@@ -128,7 +128,8 @@ function writeCatalog {
             
             # falls eine Zeile fuer das Manifest beginnt haenge den neuen Catalog an diese Zeile an
             sed -i '.tmp' "s/^$1 : /$1 : $2 /g" ${INCLUDEDCATALOGSFILE}
-            
+            rm -f ${INCLUDEDCATALOGSFILE}.tmp
+
         fi
     fi
     
