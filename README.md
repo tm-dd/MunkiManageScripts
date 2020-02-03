@@ -29,10 +29,25 @@ For **all of your applications** you can **define the following settings** in th
 
 With the script **manage_software_access.sh** you can **configure your** clients and allow or permit the download of **commercial licences**. 
 
-**Please view the following video demonstration:** 
+## Please view the following video demonstration:
+
 http://developer.thomastrid.de/Example_Using_MunkiManageScripts.mp4
 
-Well-known stumbling block:
+## How to use:
+
+* View the video demonstration, to see how the scripts works.
+* Copy the directory "MunkiData" into "/usr/local/" (or to an other place).
+* Change the configuration file "MunkiData/scripts_and_configs/config.sh".
+* Create software directories and place your packages and icons.
+* Adapt the example files "munki_infos.ods" and "munki_manifests.ods" and create new valid CSV files (look to the examples) for your software.
+* Run "MunkiData/scripts_and_configs/create_scripts.sh" to create the scripts for importing and removing software.
+* Run "MunkiData/scripts_and_configs/update_manifests.sh" to create your own manifests.
+* Start "MunkiData/scripts_and_configs/create_new_munki_repository.sh" to create a new  munki testing repository.
+* Use "MunkiData/scripts_and_configs/manage_software_access.sh" to manage which clients can download commercial or other non-public software packages.
+* Try you new Munki testing repository.
+* Start "MunkiData/scripts_and_configs/make_munki_testing_to_stable.sh" and make the testing repository as your stable one.
+
+## Well-known stumbling block:
 
 * Avoid using of the charter '-' in combination of numbers (like adobe_il_2020-01-13_en_Install.dmg) in Munki packages. Sometimes Munki could to find this software, later.
 * Do not use the String combination '","' in the description CSV files, because this is the delimiter of the fields. Please use '" , "' or other combinations instead.
