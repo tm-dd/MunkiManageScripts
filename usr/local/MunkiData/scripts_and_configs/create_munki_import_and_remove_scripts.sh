@@ -28,18 +28,24 @@
 # the path to the folder with the software files to import 
 PkgPath="$1"
 
-# the path to the new munki repository
-MunkiRepoPath="$2"
-
-# check if the 
-if [ ! -d "$PkgPath" ] || [ ! -d "$MunkiRepoPath" ]
+# check if the software path exists
+if [ ! -d "$PkgPath" ]
 then
-    echo "ERROR: You don't define two folders as parameter of the script."
-    echo "    USAGE: $0 /path/to/packages MunkiRepoPath"
-    echo "    Example: $0 /Data/Munki/software/standard_pkgs /Library/WebServer/Documents/testing"
+    echo "ERROR: You need to define the folder with your software. Optional the folder for your Munki repository as the second parameter."
+    echo "    Example 1: $0 /path/to/packages MunkiRepoPath"
+    echo "    Example 2: $0 /Data/Munki/software/standard_pkgs /Library/WebServer/Documents/testing"
     exit -1
 else
     cd "$PkgPath" || exit -1
+fi
+
+# the path to the new munki repository
+MunkiRepoPath="$2"
+
+# if not set, use the default $MunkiRepoPath
+if [ ! -d "$MunkiRepoPath" ]
+then
+    MunkiRepoPath="$pathOfMunkiRepo"
 fi
 
 ########################################
