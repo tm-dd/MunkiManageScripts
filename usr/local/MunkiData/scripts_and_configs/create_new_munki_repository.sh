@@ -29,7 +29,7 @@
 source "`dirname $0`/config.sh"
 
 # directory of the software for the importing
-if [ "$1" != "" -a "$1" != "stable" -a "$1" != "testing" -a "$1" != "debug" -a "$1" != "useRepo" ]
+if [ "$1" != "" -a "$1" != "stable" -a "$1" != "testing" -a "$1" != "debug" -a "$1" != "useRepo" -a "$1" != "doNotImport" ]
 then
     pathOfMunkiRepo="$1"
 fi
@@ -39,10 +39,10 @@ fi
 if [ "$1" == "help" -o "$1" == "--help" ]
 then
     echo
-    echo "Parameters are: [ ThePathOfTheSoftwareDirectory | stable | testing | useRepo | debug | help | --help ]"
-    echo "Example 1: $0 '$SOFTWAREDIR' stable"
-    echo "Example 2: $0 '$SOFTWAREDIR' debug"
-    echo "Example 3: $0 '$SOFTWAREDIR'"
+    echo "Parameters are: [ ThePathOfTheSoftwareDirectory | stable | testing | useRepo | doNotImport | debug | help | --help ]"
+    echo "Example 1: $0 '$pathOfMunkiRepo' stable"
+    echo "Example 2: $0 '$pathOfMunkiRepo' debug"
+    echo "Example 3: $0 '$pathOfMunkiRepo'"
     echo "Example 4: $0"
     echo
     exit 0
@@ -98,38 +98,53 @@ echo
 
 ####### IMPORTING SOFTWARE TO MUNKI #######
 
-echo; echo "IMPORT software ..."; echo
+if [ "$1" != "doNotImport" -a "$2" != "doNotImport" ]
+then
 
-# Fileseperator neu setzen
-OIFS=$IFS
-IFS=$'\n'
+    echo; echo "IMPORT software ..."; echo
+    
+    # Fileseperator neu setzen
+    OIFS=$IFS
+    IFS=$'\n'
 
-for importfile in `find $pathOfSoftware -name import_*_to_munki.sh`
-do
-    # if running in debug mode, ask before executing any import file
-    if [ "$1" == "debug" -o "$2" == "debug" ]
-    then
-        IMPORT="ask"
-        echo; echo -n "Should the file '$importfile' execute now ? (y/*) : "
-        read IMPORT
-    else
-        IMPORT='y'
-    fi
-        
-    if [ "$IMPORT" == "y" ]
-    then
-        # goto to the directory of the script
-        cd `dirname "$importfile"`
-        
-        # import the Munki files
-        bash "$importfile" "$munkiTestingPath"
-    else
-        echo "SKIPPING file '$importfile' by importing new software."
-    fi
-done
+    NUMBEROFIMPORTS=`find $SOFTWAREDIR -name import_*_to_munki.sh | wc -l | awk '{ print $1 }'`
+    NUMBERIMPORT=1
 
-# alten Fileseperator wieder setzen
-IFS=$OIFS
+    for importfile in `find $pathOfSoftware -name import_*_to_munki.sh`
+    do
+        # if running in debug mode, ask before executing any import file
+        if [ "$1" == "debug" -o "$2" == "debug" ]
+        then
+            IMPORT="ask"
+            echo; echo -n "Should the file '$importfile' execute now ? (y/*) : "
+            read IMPORT
+        else
+            IMPORT='y'
+        fi
+            
+        if [ "$IMPORT" == "y" ]
+        then
+            # goto to the directory of the script
+            cd `dirname "$importfile"`
+
+            # a progress message for the user 
+            echo; echo "Start import script ${NUMBERIMPORT} of ${NUMBEROFIMPORTS}:"; NUMBERIMPORT=$((${NUMBERIMPORT}+1))
+            
+            # import the Munki files
+            bash "$importfile" "$munkiTestingPath"
+        else
+            echo -e "SKIPPING file '$importfile' by importing new software.\n"
+        fi
+    done
+    
+    # alten Fileseperator wieder setzen
+    IFS=$OIFS
+
+else
+
+    echo -e "\nTHE SOFTWARE IMPORT WAS SKIPPED, BY USING THE OPTION 'doNotImport'.\n\n"
+
+fi
 
 # setup the access rights for the webserver
 chmod -R 755 "$munkiTestingPath"
