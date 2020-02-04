@@ -26,7 +26,6 @@
 # read settings
 source "`dirname $0`/config.sh"
 
-echo
 date
 
 # create a new file which should contains all used groups in the later '.htgroups' file
@@ -39,13 +38,16 @@ do
 	"${pathOfScripts}/create_munki_import_and_remove_scripts.sh" $i "${pathOfMunkiRepo}"
 done
 
+# update the Munki manifests
+bash ${pathOfScripts}/update_manifests.sh
+
 echo
-echo "Import and remove scripts are (hopefully) created now."
-echo "Don't forget to update the manifest files, with: ${pathOfScripts}/update_manifests.sh"
+echo "Import and remove scripts and Munki manifests are (hopefully) created now."
 echo "To update Munki please start: ${pathOfScripts}/create_new_munki_repository.sh"
 echo
 
 date
+
 exit 0
 
 

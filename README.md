@@ -40,8 +40,7 @@ http://developer.thomastrid.de/Example_Using_MunkiManageScripts.mp4
 * Change the configuration file "MunkiData/scripts_and_configs/config.sh".
 * Create software directories and place your packages and icons.
 * Adapt the example files "munki_infos.ods" and "munki_manifests.ods" and create new valid CSV files (look to the examples) for your software.
-* Run "MunkiData/scripts_and_configs/create_scripts.sh" to create the scripts for importing and removing software.
-* Run "MunkiData/scripts_and_configs/update_manifests.sh" to create your own manifests.
+* Run "MunkiData/scripts_and_configs/create_all_scripts_and_manifests.sh" to create the scripts for importing and removing software and your own manifests.
 * Start "MunkiData/scripts_and_configs/create_new_munki_repository.sh" to create a new  munki testing repository.
 * Use "MunkiData/scripts_and_configs/manage_software_access.sh" to manage which clients can download commercial or other non-public software packages.
 * Try you new Munki testing repository.
