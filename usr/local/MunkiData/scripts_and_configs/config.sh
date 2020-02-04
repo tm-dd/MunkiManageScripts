@@ -24,8 +24,9 @@
 #
 #
 
-pathOfScripts='/usr/local/MunkiData/scripts_and_configs'
-pathOfSoftware='/usr/local/MunkiData/software'
+pathOfMunkiData='/usr/local/MunkiData'
+pathOfScripts="${pathOfMunkiData}"'/scripts_and_configs'
+pathOfSoftware="${pathOfMunkiData}"'/software'
 pathOfMunkiRepo='/Library/WebServer/Documents/testing'
 
 # the testing and the stable path of the Munki database
@@ -39,7 +40,7 @@ FileMunkiInfos=${pathOfScripts}'/munki_infos.csv'
 MunkiManifestConfig=${pathOfScripts}'/munki_manifests.csv'
 
 # folder of internal files for the import
-munkiInternalFiles=${pathOfSoftware}'/munki_repo_preset_icon_and_config_files'
+munkiInternalFiles=${pathOfMunkiData}'/munki_repo_preset_icon_and_config_files'
 
 # PATH of uninstall scripts or packages on the munki server
 UNINSTALLFILESPATH=${munkiInternalFiles}'/uninstall_scripts'
