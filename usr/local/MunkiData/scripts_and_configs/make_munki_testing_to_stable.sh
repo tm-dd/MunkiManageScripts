@@ -26,9 +26,11 @@
 # read settings
 source "`dirname $0`/config.sh"
 
-ANSWER='unknown'
+ANSWER="$1"
 
-while [ "$ANSWER" = "unknown" ] 
+if [ "$ANSWER" = "move" ] || [ "$ANSWER" = "sync" ] || [ "$ANSWER" = "exit" ]; then true; else ANSWER=''; fi
+
+while [ "$ANSWER" = '' ] 
 do
     echo
     echo "please type:"
@@ -38,7 +40,7 @@ do
     echo
     echo -n "Your choice: "
     read ANSWER
-    if [ "$ANSWER" = "move" ] || [ "$ANSWER" = "sync" ] || [ "$ANSWER" = "exit" ]; then true; else ANSWER='unknown'; fi
+    if [ "$ANSWER" = "move" ] || [ "$ANSWER" = "sync" ] || [ "$ANSWER" = "exit" ]; then true; else ANSWER=''; fi
 done
 
 if [ "$ANSWER" = "exit" ]; then echo "Exit without changes."; exit 1; fi
