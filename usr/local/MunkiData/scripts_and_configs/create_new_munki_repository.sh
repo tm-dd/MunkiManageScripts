@@ -90,7 +90,7 @@ set -x
 mkdir -p "${munkiTestingPath}/manifests/" "${munkiTestingPath}/icons"
 cp ${munkiManifestOffsets}/* "${munkiTestingPath}/manifests/"
 cp ${munkiIconOffsets}/* "${munkiTestingPath}/icons/"
-chmod 644 "${munkiTestingPath}/manifests/*" "${munkiTestingPath}/icons/*"
+chmod 644 ${munkiTestingPath}/manifests/* ${munkiTestingPath}/icons/*
 ls -l "${munkiTestingPath}/manifests/"
 ls -l "${munkiTestingPath}/icons/"
 set +x
@@ -107,7 +107,7 @@ then
     OIFS=$IFS
     IFS=$'\n'
 
-    NUMBEROFIMPORTS=`find $SOFTWAREDIR -name import_*_to_munki.sh | wc -l | awk '{ print $1 }'`
+    NUMBEROFIMPORTS=`find $pathOfSoftware -name import_*_to_munki.sh | wc -l | awk '{ print $1 }'`
     NUMBERIMPORT=1
 
     for importfile in `find $pathOfSoftware -name import_*_to_munki.sh`
