@@ -25,6 +25,9 @@
 
 ########################################
 
+# read settings
+source "`dirname $0`/config.sh"
+
 # the path to the folder with the software files to import 
 PkgPath="$1"
 
@@ -53,9 +56,6 @@ fi
 # Fileseperator neu setzen
 OIFS=$IFS
 IFS=$'\n'
-
-# read settings
-source "`dirname $0`/config.sh"
 
 # der Verzeichnisname aller dieser Pakete wird zur Kategorie im Munki
 CATALOG=`basename $(pwd)`
