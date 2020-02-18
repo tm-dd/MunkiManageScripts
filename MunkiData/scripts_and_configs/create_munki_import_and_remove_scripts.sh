@@ -154,28 +154,32 @@ fi
 echo "... removing '${MUNKINAME}' from munki"
 
 # path to the plist file (munki tell that, by the import process) 
-PlistPath=`find "${MunkiRepoPath}/pkgsinfo/'${CATEGORY}'" -name "'${MUNKINAME}'*.plist" | sort | '"sed -e 's/ /\\\\ /g' -e 's/\!/\\\\!/g' -e 's/(/\\\\(/g' -e 's/)/\\\\)/g'"' | head -n 1`
+PlistPath=$(find "${MunkiRepoPath}/pkgsinfo/'${CATEGORY}'" -name "'${MUNKINAME}'*.plist" | sort | head -n 1)
 
 # package path
-PackagePath="${MunkiRepoPath}/pkgs/"`defaults read ${PlistPath} installer_item_location`
+PackagePath="${MunkiRepoPath}/pkgs/"`defaults read "${PlistPath}" installer_item_location`
 
 # icon path
 IconPath=${MunkiRepoPath}"/icons/'${MUNKINAME}'.png"
 
-# remove the icon
-(set -x; rm ${PackagePath} || echo "WARNING: Could not remove the package.")
-
 # remove the package
-(set -x; rm ${IconPath} || echo "WARNING: Could not remove the icon.")
+echo "      removing package: ${PackagePath}"
+(rm "${PackagePath}" || echo "WARNING: Could not remove the package: ${PackagePath}")
+
+# remove the icon
+echo "      removing icon: ${IconPath}"
+(rm "${IconPath}" || echo "WARNING: Could not remove the icon: ${IconPath}")
 
 # remove the software from Munki
+echo "      removing ${PlistPath} from manifest: $MunkiManifests"
 /usr/local/munki/manifestutil remove-pkg "'${MUNKINAME}'" --manifest "$MunkiManifests" --section optional_installs
 
 # remove the Plist file
-(set -x; rm ${PlistPath} || echo "WARNING: Could not remove the plist file.")
+echo "      removing plist: ${PlistPath}"
+(rm "${PlistPath}" || echo "WARNING: Could not remove the plist file: ${PlistPath}")
 
 # update catalog
-/usr/local/munki/makecatalogs $MunkiRepoPath
+/usr/local/munki/makecatalogs $MunkiRepoPath > /dev/null
 
 exit 0
         ' > $OutfileMunkiRemove  # dieses Munki-Uninstaller-Skript ist hiermit abgeschlossen
@@ -248,7 +252,7 @@ MunkiTmpDir="/tmp/munki_tmp_'${CATALOG}'_"`/bin/date +%Y-%m-%d_%Hh%Mm%Ss`
 mkdir -p "$MunkiTmpDir"
 
 # check if the package is allready imported
-if [ -n "`find ${MunkiRepoPath}/pkgsinfo/'${CATEGORY}' -name '${MUNKINAME}'*.plist 2> /dev/null | sort | head -n 1`" ]
+if [ -n "$(find ${MunkiRepoPath}/pkgsinfo/'${CATEGORY}' -name '${MUNKINAME}'*.plist 2> /dev/null | sort | '"sed -e 's/ /\\ /g' -e 's/\!/\\!/g' -e 's/(/\\(/g' -e 's/)/\\)/g'"' | head -n 1)" ]
 then
     echo -e -n "\nINFORMATION: It looks like '${MUNKINAME}' is allready imported. - Please check: "
     find "${MunkiRepoPath}/pkgsinfo/'${CATEGORY}'" -name "'${MUNKINAME}'*.plist" | sort | head -n 1; echo
@@ -296,8 +300,8 @@ echo ''
             echo -e 'echo "</Files>" >> $HTACCESSFILE'"\n"  >> $OutfileMunkiImport
 
             # eine Warnung ausgeben, falls AuthUserFile und AuthGroupFile nicht existieren
-            echo 'if [ ! -e "$AuthUserFile" ]; then echo "INFORMATION: AuthUserFile $AuthUserFile not found. Please create it later."; fi' >> $OutfileMunkiImport
-            echo -e 'if [ ! -e "$AuthGroupFile" ]; then echo "INFORMATION: AuthGroupFile $AuthGroupFile not found. Please create it later."; fi'"\n" >> $OutfileMunkiImport
+            echo 'if [ ! -e "'${HTUSERSFILE}'" ]; then echo "INFORMATION: AuthUserFile '${HTUSERSFILE}' not found. Please create it later."; fi' >> $OutfileMunkiImport
+            echo -e 'if [ ! -e "'${HTGROUPSFILE}'" ]; then echo "INFORMATION: AuthGroupFile '${HTGROUPSFILE}' not found. Please create it later."; fi'"\n" >> $OutfileMunkiImport
             
             # erstelle eine Datei, welche alle Gruppen fuer die spaetere ".htgroups" enthaellt (nicht sehr effizient, aber funktional)
             touch $ACCESSGROUPFILE
@@ -333,7 +337,7 @@ echo ''
 
         # in diese Datei legt Munki nach Aufruf von "munkiimport" (im XML-Format) die Daten und Parameter des verwalteten Paketes ab
         echo '# find the plist file of the new package' >> $OutfileMunkiImport   
-        echo 'PLISTPATH=`find ${MunkiRepoPath}/pkgsinfo/'${CATEGORY}' -name '${MUNKINAME}'*.plist 2> /dev/null | sort | '"sed -e 's/ /\\\\ /g' -e 's/\!/\\\\!/g' -e 's/(/\\\\(/g' -e 's/)/\\\\)/g'"' | head -n 1`' >> $OutfileMunkiImport
+        echo 'PLISTPATH=$(find ${MunkiRepoPath}/pkgsinfo/'${CATEGORY}' -name '${MUNKINAME}'*.plist 2> /dev/null | sort | head -n 1)' >> $OutfileMunkiImport
         echo 'echo "DEBUG: Found plist file on: ${PLISTPATH}"' >> $OutfileMunkiImport
         echo '' >> $OutfileMunkiImport
 
@@ -343,9 +347,9 @@ echo ''
             echo '# Abhaengigkeit "requires" definieren' >> $OutfileMunkiImport
             echo 'echo "... patching software '$MUNKINAME' requires '$REQUIRES' for installing"' >> $OutfileMunkiImport
             echo 'for REQUIREITEM in '${REQUIRES}'; do' >> $OutfileMunkiImport
-            echo '   ( set -x; defaults write ${PLISTPATH} requires -array-add "$REQUIREITEM" )' >> $OutfileMunkiImport
+            echo '   ( set -x; defaults write "${PLISTPATH}" requires -array-add "$REQUIREITEM" )' >> $OutfileMunkiImport
             echo 'done' >> $OutfileMunkiImport
-            echo '( set -x; plutil -convert xml1 ${PLISTPATH} )'  >> $OutfileMunkiImport
+            echo '( set -x; plutil -convert xml1 "${PLISTPATH}" )'  >> $OutfileMunkiImport
             echo '' >> $OutfileMunkiImport
         fi
 
@@ -355,9 +359,9 @@ echo ''
             echo '# Abhaengigkeit "update_for" definieren' >> $OutfileMunkiImport
             echo 'echo "... patching software '$MUNKINAME' is an update for '$UPDATEFOR' in the repository"' >> $OutfileMunkiImport
             echo 'for UPDATEITEM in '${UPDATEFOR}'; do' >> $OutfileMunkiImport
-            echo '   ( set -x; defaults write ${PLISTPATH} update_for -array-add "$UPDATEITEM" )' >> $OutfileMunkiImport
+            echo '   ( set -x; defaults write "${PLISTPATH}" update_for -array-add "$UPDATEITEM" )' >> $OutfileMunkiImport
             echo 'done' >> $OutfileMunkiImport
-            echo '( set -x; plutil -convert xml1 ${PLISTPATH} )'  >> $OutfileMunkiImport
+            echo '( set -x; plutil -convert xml1 "${PLISTPATH}" )'  >> $OutfileMunkiImport
             echo '' >> $OutfileMunkiImport
         fi
 
@@ -365,8 +369,8 @@ echo ''
         if [ -n "$ACTION" ]
         then
             echo '# Abhaengigkeit "RestartAction" definieren' >> $OutfileMunkiImport
-            echo '( set -x; defaults write ${PLISTPATH} "RestartAction" "'$ACTION'"' >> $OutfileMunkiImport
-            echo 'plutil -convert xml1 ${PLISTPATH} )'  >> $OutfileMunkiImport
+            echo '( set -x; defaults write "${PLISTPATH}" "RestartAction" "'$ACTION'"' >> $OutfileMunkiImport
+            echo 'plutil -convert xml1 "${PLISTPATH}" )'  >> $OutfileMunkiImport
             echo '' >> $OutfileMunkiImport
         fi
 
@@ -375,8 +379,8 @@ echo ''
         then
             echo '# Bedingung "uninstallable" definieren' >> $OutfileMunkiImport
             echo 'echo "... patching software '$MUNKINAME' requires the condition uninstallable='$UNINSTALLABLE' after installing"' >> $OutfileMunkiImport
-            if [ "$UNINSTALLABLE" = "true" ]; then echo '( set -x; defaults write ${PLISTPATH} "uninstallable" -bool true; plutil -convert xml1 ${PLISTPATH} )' >> $OutfileMunkiImport; fi
-            if [ "$UNINSTALLABLE" = "false" ]; then echo '( set -x; defaults write ${PLISTPATH} "uninstallable" -bool false; plutil -convert xml1 ${PLISTPATH} )' >> $OutfileMunkiImport; fi
+            if [ "$UNINSTALLABLE" = "true" ]; then echo '( set -x; defaults write "${PLISTPATH}" "uninstallable" -bool true; plutil -convert xml1 "${PLISTPATH}" )' >> $OutfileMunkiImport; fi
+            if [ "$UNINSTALLABLE" = "false" ]; then echo '( set -x; defaults write "${PLISTPATH}" "uninstallable" -bool false; plutil -convert xml1 "${PLISTPATH}" )' >> $OutfileMunkiImport; fi
             echo '' >> $OutfileMunkiImport
         fi
 
@@ -387,7 +391,7 @@ echo ''
             echo '# Optionen fuer das "installer"-Kommando angeben (Welcher Harken wuerde bei der manuellen Installation gesetzt werden ?)' >> $OutfileMunkiImport
             echo 'echo "... patching software '$MUNKINAME' to setup options for the installer program"' >> $OutfileMunkiImport
             XML=$(echo "${OPTIONSINSTALLER}" | awk -F ':| ' '{ for (i=1; i<=NF; i++) { print "<dict><key>attributeSetting</key><integer>" $i "</integer><key>choiceAttribute</key><string>selected</string><key>choiceIdentifier</key>"; i++; print "<string>" $i "</string></dict>" } }')
-            echo 'plutil -insert installer_choices_xml -xml "<array>'${XML}'</array>" ${PLISTPATH}' >> $OutfileMunkiImport
+            echo 'plutil -insert installer_choices_xml -xml "<array>'${XML}'</array>" "${PLISTPATH}"' >> $OutfileMunkiImport
             echo '' >> $OutfileMunkiImport
         fi
         
@@ -400,9 +404,9 @@ echo ''
             echo "  sed -i '.munki_patch_backup7' '/<string>'"'${subpkg}'"'"'<\/string>/a \' >> $OutfileMunkiImport    # Abschnitt vor "<string>sub.packet.name</string>" schreiben
             echo '   <key>optional</key>\' >> $OutfileMunkiImport
             echo '   <true/>\' >> $OutfileMunkiImport
-            echo "' "'${PLISTPATH}' >> $OutfileMunkiImport
+            echo "' "'"${PLISTPATH}"' >> $OutfileMunkiImport
             echo 'done' >> $OutfileMunkiImport
-            echo 'mv ${PLISTPATH}.munki_patch_backup7 $MunkiTmpDir/' >> $OutfileMunkiImport
+            echo 'mv "${PLISTPATH}.munki_patch_backup7" $MunkiTmpDir/' >> $OutfileMunkiImport
             echo '' >> $OutfileMunkiImport
         fi
 
@@ -422,8 +426,8 @@ echo ''
 			# das Skript einfuegen (mit XML-kompatiblen Zeichen fuer: <,>,& sowie dem escapen von '\' zu '\\' und einem '\' am Ende jeder Zeile)
 			cat "${INSTALLCHECKSCRIPTSPATH}/${INSTALLCHECKFILE}" | sed 's/\&/\&amp;/g' | sed 's/</\&lt;/g' | sed 's/>/\&gt;/g' | sed 's/\\/\\\\/g' | perl -pe 's/\n/\\\n/' >> $OutfileMunkiImport
             echo '      </string>\' >> $OutfileMunkiImport
-            echo "' "'${PLISTPATH} )' >> $OutfileMunkiImport
-            echo 'mv ${PLISTPATH}.munki_patch_backup8 $MunkiTmpDir/' >> $OutfileMunkiImport
+            echo "' "'"${PLISTPATH}" )' >> $OutfileMunkiImport
+            echo 'mv "${PLISTPATH}.munki_patch_backup8" $MunkiTmpDir/' >> $OutfileMunkiImport
             echo '' >> $OutfileMunkiImport
 		fi
 
@@ -442,11 +446,11 @@ echo ''
             # das uninstall-Skript einfuegen (mit XML-kompatiblen Zeichen fuer: <,>,&)
             cat "${UNINSTALLFILESPATH}/${UNINSTALLFILE}" | sed 's/\&/\&amp;/g' | sed 's/</\&lt;/g' | sed 's/>/\&gt;/g' >> ./_munki_patch_files/${MUNKINAME}.with_replace
             echo '</string>' >> ./_munki_patch_files/${MUNKINAME}.with_replace
-            echo 'grep "<string>removepackages</string>" ${PLISTPATH} > ../_munki_patch_files/'${MUNKINAME}'.to_replace' >> $OutfileMunkiImport
+            echo 'grep "<string>removepackages</string>" "${PLISTPATH}" > ../_munki_patch_files/'${MUNKINAME}'.to_replace' >> $OutfileMunkiImport
             echo 'diff -u ../_munki_patch_files/'${MUNKINAME}'.to_replace ../_munki_patch_files/'${MUNKINAME}'.with_replace > ../_munki_patch_files/'${MUNKINAME}'.patch'  >> $OutfileMunkiImport
             # patche hiermit spaeter die Munki-Datei
-            echo '( set -x; pwd; patch ${PLISTPATH} ../_munki_patch_files/'${MUNKINAME}'.patch || ( echo "ERROR BY PATCHING."; exit -1 ) )' >> $OutfileMunkiImport
-            echo 'mv ${PLISTPATH}.orig $MunkiTmpDir/' >> $OutfileMunkiImport
+            echo '( set -x; pwd; patch "${PLISTPATH}" ../_munki_patch_files/'${MUNKINAME}'.patch || ( echo "ERROR BY PATCHING."; exit -1 ) )' >> $OutfileMunkiImport
+            echo 'mv "${PLISTPATH}.orig" $MunkiTmpDir/' >> $OutfileMunkiImport
             echo 'sleep 1' >> $OutfileMunkiImport
             echo '' >> $OutfileMunkiImport
         fi
@@ -456,8 +460,8 @@ echo ''
         if [ "$ALLOWUNTRUSTED" = "true" ]
         then
             echo 'echo "... patching software '$MUNKINAME' to allow untrusted packages"' >> $OutfileMunkiImport
-            echo 'defaults write ${PLISTPATH} "allow_untrusted" -bool TRUE' >> $OutfileMunkiImport
-            echo 'plutil -convert xml1 ${PLISTPATH}'  >> $OutfileMunkiImport 
+            echo 'defaults write "${PLISTPATH}" "allow_untrusted" -bool TRUE' >> $OutfileMunkiImport
+            echo 'plutil -convert xml1 "${PLISTPATH}"'  >> $OutfileMunkiImport 
             echo '' >> $OutfileMunkiImport
         fi	
 
@@ -466,8 +470,8 @@ echo ''
         then
             echo '# change the version number of the package' >> $OutfileMunkiImport
             echo 'echo "... patching software '$MUNKINAME' to change the version number"' >> $OutfileMunkiImport
-            echo '( set -x; defaults write ${PLISTPATH} version "'${REPLACEVERSION}'"' >> $OutfileMunkiImport            # aendern der "oberste" Versionsnummer der Software (und nicht der von Unterpacketen)
-            echo 'plutil -convert xml1 ${PLISTPATH} )' >> $OutfileMunkiImport                                            # Umwandlung der gepatchten Datei ins XML-Format
+            echo '( set -x; defaults write "${PLISTPATH}" version "'${REPLACEVERSION}'"' >> $OutfileMunkiImport            # aendern der "oberste" Versionsnummer der Software (und nicht der von Unterpacketen)
+            echo 'plutil -convert xml1 "${PLISTPATH}" )' >> $OutfileMunkiImport                                            # Umwandlung der gepatchten Datei ins XML-Format
             echo 'sleep 1' >> $OutfileMunkiImport
             echo '' >> $OutfileMunkiImport
         fi	
@@ -481,8 +485,8 @@ echo ''
             echo 'echo "... patching software '$MUNKINAME' to append own XML code"' >> $OutfileMunkiImport
             echo "sed -i '.munki_patch_backup10' '/<string>"$MUNKINAME'<\/string>/a \' >> $OutfileMunkiImport									# hinter den Namen des Paketes
 			echo "$EXTRAXMLOPTIONS" >> $OutfileMunkiImport																						# haenge die XML-Zeile(n) an
-            echo "' "'${PLISTPATH}' >> $OutfileMunkiImport
-            echo 'mv ${PLISTPATH}.munki_patch_backup10 $MunkiTmpDir/' >> $OutfileMunkiImport
+            echo "' "'"${PLISTPATH}"' >> $OutfileMunkiImport
+            echo 'mv "${PLISTPATH}.munki_patch_backup10" $MunkiTmpDir/' >> $OutfileMunkiImport
             echo '' >> $OutfileMunkiImport
         fi
 		
