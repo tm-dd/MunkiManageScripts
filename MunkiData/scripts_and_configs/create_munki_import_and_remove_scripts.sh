@@ -333,7 +333,7 @@ echo ''
 
         # in diese Datei legt Munki nach Aufruf von "munkiimport" (im XML-Format) die Daten und Parameter des verwalteten Paketes ab
         echo '# find the plist file of the new package' >> $OutfileMunkiImport   
-        echo 'PLISTPATH=`find ${MunkiRepoPath}/pkgsinfo/'${CATEGORY}' -name '${MUNKINAME}'*.plist 2> /dev/null | sort | head -n 1`' >> $OutfileMunkiImport
+        echo 'PLISTPATH=`find ${MunkiRepoPath}/pkgsinfo/'${CATEGORY}' -name '${MUNKINAME}'*.plist 2> /dev/null | sort | '"sed -e 's/ /\\\\ /g' -e 's/\!/\\\\!/g' -e 's/(/\\\\(/g' -e 's/)/\\\\)/g'"' | head -n 1`' >> $OutfileMunkiImport
         echo 'echo "DEBUG: Found plist file on: ${PLISTPATH}"' >> $OutfileMunkiImport
         echo '' >> $OutfileMunkiImport
 
@@ -474,7 +474,7 @@ echo ''
 
 	    # falls der Wert "EXTRAXMLOPTIONS" gesetzt ist, ergaenze den dort eingetragen XML-Abschnitt in die Munki-Definition
 		numbersOfSingleQuoteCharacter=`echo "$EXTRAXMLOPTIONS" | tr -cd "'" | wc -c`
-		if [ $numbersOfSingleQuoteCharacter -gt 0 ]; then echo "ERROR and STOP: The XML Code for the software $MUNKINAME contain the character ' (single quote). This is forbidden, at the moment."; exit -1; fi
+		if [ $numbersOfSingleQuoteCharacter -gt 0 ]; then echo "ERROR: The XML Code for the software $MUNKINAME contain the character ' (single quote). This is forbidden, at the moment. Please fix it, now."; sleep 60; fi
 		if [ -n "$EXTRAXMLOPTIONS" ]
         then
             # fuer alle nicht gewuenschten Pakete ist hier ist noch ein weiteres Patchen mit "<key>optional</key><true/>" im "<key>receipts</key>"-Zweig hinter "<string>sub.packet.name</string>" noetig
