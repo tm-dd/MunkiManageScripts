@@ -154,7 +154,7 @@ fi
 echo "... removing '${MUNKINAME}' from munki"
 
 # path to the plist file (munki tell that, by the import process) 
-PlistPath=`find "${MunkiRepoPath}/pkgsinfo/'${CATEGORY}'" -name "'${MUNKINAME}'*.plist" | sort | head -n 1`
+PlistPath=`find "${MunkiRepoPath}/pkgsinfo/'${CATEGORY}'" -name "'${MUNKINAME}'*.plist" | sort | '"sed -e 's/ /\\\\ /g' -e 's/\!/\\\\!/g' -e 's/(/\\\\(/g' -e 's/)/\\\\)/g'"' | head -n 1`
 
 # package path
 PackagePath="${MunkiRepoPath}/pkgs/"`defaults read ${PlistPath} installer_item_location`
