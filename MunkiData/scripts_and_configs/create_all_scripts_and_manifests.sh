@@ -27,6 +27,7 @@
 source "`dirname $0`/config.sh"
 
 date
+echo
 
 # create a new file which should contains all used groups in the later '.htgroups' file
 echo '# group_name : protected_munki_software : munki_catalog #' > ${ACCESSGROUPFILE}
@@ -34,8 +35,12 @@ echo '# group_name : protected_munki_software : munki_catalog #' > ${ACCESSGROUP
 # for all folders with software, create munki import and remove scripts
 for i in $(ls -1d "${pathOfSoftware}"'/'* | grep -v '.txt$\|.asc$')
 do
-	"${pathOfScripts}/create_munki_import_and_remove_scripts.sh" $i "${pathOfMunkiRepo}"
+	if [ "$1" == '--debug' ]
+		then "${pathOfScripts}/create_munki_import_and_remove_scripts.sh" "$1" $i "${pathOfMunkiRepo}"; echo
+		else "${pathOfScripts}/create_munki_import_and_remove_scripts.sh" $i "${pathOfMunkiRepo}"
+	fi
 done
+
 
 # update the Munki manifests
 bash ${pathOfScripts}/update_manifests.sh

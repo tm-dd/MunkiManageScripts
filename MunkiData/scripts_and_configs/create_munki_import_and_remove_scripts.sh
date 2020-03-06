@@ -28,6 +28,14 @@
 # read settings
 source "`dirname $0`/config.sh"
 
+# debug mode
+DEBUG="0"
+if [ "$1" == "--debug" ]
+then
+    DEBUG="1"
+    set -- "${@:2}" "${@:3}"
+fi
+
 # the path to the folder with the software files to import 
 PkgPath="$1"
 
@@ -80,7 +88,7 @@ rm -f $PkgPath/_remove_from_munki_/* $PkgPath/_import_to_munki_/*
 
 NumberOfSoftware=0
 
-for i in $(grep "^"'"'$CATALOG'","' $FileMunkiInfos)
+for i in $(grep "^"'"'$CATALOG'","' $FileMunkiInfos | sort -f)
 do
     
     #
@@ -89,7 +97,7 @@ do
     i=`echo $i | sed 's/,,/,"",/g' | sed 's/,,/,"",/g' | sed 's/,$/,""/'`               # damit wird erreicht das Zeilen wie '"WERT1",,,"WERT4",,' zu besser trennbaren Zeilen '"WERT1","","","WERT4","",""' werden
     i=`echo $i | sed 's/^"//g' | sed 's/"$//g'`                                         # dies entfernt das erste und letzte '"', da dieses Zeichen am Anfang und Ende nicht benoetigt wird    
     NAME=`echo $i | awk -F '","' '{ print $2 }'`                                        # der Name der Anwendung im $FileMunkiInfos (z.B.: "Adobe_Flash_Player")
-    PAKETNAME=`ls -1 | grep -i "^$NAME" | sort | grep -i 'pkg\|dmg$' | head -n 1`       # den Dateinamen des Paketes finden im aktuellen Verzeichnis (falls mehrere Pakete mit $NAME anfangen (z.B. Wine* ergibt: Wine.pkg und WineBottler.pkg), nimm den kuezesten)
+    PAKETNAME=`ls -1 | grep -i "^$NAME" | sort -r | grep -i 'pkg\|dmg$' | head -n 1`    # den Dateinamen des Paketes finden im aktuellen Verzeichnis (falls mehrere Pakete mit $NAME anfangen (z.B. App X* ergibt: App X 10.pkg und App X 11.pkg), nimm die vermutlich Neuste)
     MUNKINAME=`echo $i | sed 's/ /_/g' | awk -F '","' '{ print $1 "_" $2 }'`            # der Munki-interne Name der App (z.B.: "standard_pkgs_Adobe_Flash_Player")
     CATEGORY=`echo $i | awk -F '","' '{ print $3 }'`                                    # die Kategorie der Software (z.B.: "network")
     DESCRIPTION=`echo $i | awk -F '","' '{ print $4 }'`                                 # ein Beschreibungstext (z.B.: "A browser plugin for some web content. ...")
@@ -114,6 +122,8 @@ do
     #
     # erstelle fuer jedes Paket Import-Zeilen fuer Munki
     #
+
+    if [ "$DEBUG" == "1" ]; then echo "++ DEBUG: CSV NAME PART: $NAME  -  PACKAGE NAME: $PAKETNAME  -  MUNKI NAME: $MUNKINAME  -  MUNKI CATEGORY: $CATEGORY  -  HTACCESS GROUPS: $ALLOWEDGROUPS ++"; fi
 
     # falls das Paket in der CSV-Datei gefunden wird
     if [ -f "$PAKETNAME" ]
@@ -549,7 +559,7 @@ do
     FOUNDPKG=`grep -r $i $PkgPath/_import_to_munki_/`
     if [ "" == "$FOUNDPKG" ]
     then
-        echo "   Warning: Munki informmation for the package '$i' in '$CATALOG' NOT FOUND !"
+        echo "## Warning: Munki informmation for the package '$i' in '$CATALOG' NOT FOUND ! ##"
         if [ -n "`file $i | awk -F ' ' '{ print $2 }' | grep 'directory' `" ]; then echo "+++ Warning: The package '$i' is a directory not a file. Only single file packages are accepted. Please create a DMG file from the package and use this one. +++"; fi
     fi
 done
@@ -559,9 +569,9 @@ done
 # Infomeldung an den Benutzer
 if [ $NumberOfSoftware -gt 0 ]
 then
-    echo "*** The Munki import files (for $NumberOfSoftware applications) are (hopefully) created for the catalog '$CATALOG' on '$PkgPath/_import_to_munki_/'. ***"
+    echo "* The Munki import files (for $NumberOfSoftware applications) are (hopefully) created for the catalog '$CATALOG' on '$PkgPath/_import_to_munki_/'. *"
 else
-    echo "*** Warning: There was NO Munki import file created, for the catalog '$CATALOG'. ***"
+    echo "## Warning: There was NO Munki import file created, for the catalog '$CATALOG'. ##"
     rmdir "$PkgPath/_remove_from_munki_"
     rmdir "$PkgPath/_import_to_munki_"
 fi
