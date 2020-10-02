@@ -12,7 +12,7 @@ But if you need:
 * to configure access to commercial packages to different clients (with a tool)
 * to define a lot of different Munki manifests
 
-it could be much easier to use MunkiManageScripts manage your repository
+it could be much easier to use MunkiManageScripts manage your repository.
 It define the rules in text files and have scripts from updating whole repository to single packages.
 
 ## How it works:

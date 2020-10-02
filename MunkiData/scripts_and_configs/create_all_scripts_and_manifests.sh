@@ -53,5 +53,3 @@ echo
 date
 
 exit 0
-
-
