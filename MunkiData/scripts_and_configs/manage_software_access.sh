@@ -44,7 +44,7 @@ Use this dick-and-dirty script to manage your Munki accounts and groups to acces
 
    -h ... get this short help
    -l ... list all Munki accounts and here groups
-   -c ... list Munki catalogs and needed groups
+   -g ... list Munki manifests and nessesary groups
    -m ... get the list of manifests for clients (to use as "ClientIdentifier") and her included manifests
    -f ... get the file names for the Munki accounts and groups  
    -p LOGIN ... set/change the password for LOGIN
@@ -64,7 +64,7 @@ Use this dick-and-dirty script to manage your Munki accounts and groups to acces
 
 
 # input wrong parameters
-if ! [ "$1" == "-h" -o "$1" == "-l" -o "$1" == "-c" -o  "$1" == "-m" -o "$1" == "-f" -o "$1" == "-p" -o "$1" == "-d" -o "$1" == "-i" -o "$1" == "-a" -o "$1" == "-r" -o -z "$1" ]
+if ! [ "$1" == "-h" -o "$1" == "-l" -o "$1" == "-g" -o  "$1" == "-m" -o "$1" == "-f" -o "$1" == "-p" -o "$1" == "-d" -o "$1" == "-i" -o "$1" == "-a" -o "$1" == "-r" -o -z "$1" ]
 then
     echo -e "\nERROR: WRONG PARAMETERS.";
     getHelp
@@ -148,27 +148,27 @@ fi
 
 
 # list all Munki catalogs and necessary groups
-if [ "$1" == "-c" ]
+if [ "$1" == "-g" ]
 then
     echo -e "\nTo use the following Munki manifests you need to be in this groups:\n"
     
-    PROTECTEDCATALOGS=`cat ${ACCESSGROUPFILE} | grep -v '^#' | awk -F ' : ' '{ print $3 }' | sort -u`
+    PROTECTEDMANIFESTS=`cat ${ACCESSGROUPFILE} | grep -v '^#' | awk -F ' : ' '{ print $3 }' | sort -u`
     
-    for CATALOG in `echo ${PROTECTEDCATALOGS}`
+    for MANIFEST in `echo ${PROTECTEDMANIFESTS}`
     do
         
-        GROUPNAMES=`grep ${CATALOG} ${ACCESSGROUPFILE} | grep -v '^#' | awk -F ' : ' '{ print $1 }'`
+        GROUPNAMES=`grep ${MANIFEST} ${ACCESSGROUPFILE} | grep -v '^#' | awk -F ' : ' '{ print $1 }'`
         
         for GROUPNAME in `echo ${GROUPNAMES}`
         do
             # get the groups and manifest from ${ACCESSGROUPFILE}
-            echo "   * CATALOG '${CATALOG}' needs accounts from GROUP '${GROUPNAME}'"
+            echo "   * MANIFEST '${MANIFEST}' needs accounts from GROUP '${GROUPNAME}'"
 
             # get the groups and manifest from ${INCLUDEDCATALOGSFILE}
-            INCLUDEDCATALOGS=`grep "${CATALOG}" "${INCLUDEDCATALOGSFILE}" | awk -F ' : ' '{ print $1 }'`
-            for INCLUDEDCATALOG in `echo ${INCLUDEDCATALOGS}`
+            INCLUDEDMANIFESTS=`grep "${MANIFEST}" "${INCLUDEDCATALOGSFILE}" | awk -F ' : ' '{ print $1 }'`
+            for INCLUDEDMANIFEST in `echo ${INCLUDEDMANIFESTS}`
             do
-                echo "   * CATALOG '${INCLUDEDCATALOG}' needs accounts from GROUP '${GROUPNAME}'"
+                echo "   * MANIFEST '${INCLUDEDMANIFEST}' needs accounts from GROUP '${GROUPNAME}'"
             done
         done
         
@@ -263,7 +263,7 @@ then
     echo " * The Munki ACCOUNTS should be define here: '${HTUSERSFILE}'"
     echo " * The Munki GROUPS should be define here: '${HTGROUPSFILE}'"
     if [ -f "${MUNKIPASSWORDLOGFILE}" ]; then echo " * Used logins and password will be stored in: '${MUNKIPASSWORDLOGFILE}'"; fi
-    echo " * The following file contains the information about the nesseary groups and catalogs for protected software: '${ACCESSGROUPFILE}'"
+    echo " * The following file contains the information about the nesseary groups and manifests for protected software: '${ACCESSGROUPFILE}'"
     echo -e " * Look at the following file to see which catalog import which other catalogs: '${INCLUDEDCATALOGSFILE}'\n"
     echo "!!! Please verify if your Munki repository use this files to protect your packages. Check the '.htaccess' files, there. !!!"
 fi
@@ -299,7 +299,7 @@ done
 if [ "$1" == "-i" ]
 then
     
-    echo -e "\nThe account '${LOGIN}' have access to the following: GROUP:SOFTWARE:MANIFEST \n"
+    echo -e "\nThe account '${LOGIN}' have access to the following: GROUP : SOFTWARE : MANIFEST \n"
     for g in ${ISINGROUP}; do grep "${g}" "${ACCESSGROUPFILE}" | sort -u | sed 's/^/   /g'; done
     for g in ${ISINGROUP}; do if [ -z "`grep "^\${g} :" "${ACCESSGROUPFILE}"`" ]; then echo "   *** FOUND UNUSED GROUP '${g}' IN '${HTGROUPSFILE}'. ***"; fi done
 
@@ -336,8 +336,8 @@ then
     if [ "${FOUNDLINES}" -lt 1 ]; then echo "${NEWGROUP}: " >> ${HTGROUPSFILE}; fi
     
     # put the login to the group
-    sed -i '.last' "s/$NEWGROUP: /$NEWGROUP: $LOGIN /" ${HTGROUPSFILE}
-    
+    sed -i'.last' "s/$NEWGROUP: /$NEWGROUP: $LOGIN /" ${HTGROUPSFILE}
+
     (echo; set -x; diff ${HTGROUPSFILE}.last ${HTGROUPSFILE})
     
 fi

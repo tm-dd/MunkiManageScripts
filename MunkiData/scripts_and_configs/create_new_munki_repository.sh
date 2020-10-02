@@ -31,7 +31,7 @@ source "`dirname $0`/config.sh"
 # directory of the software for the importing
 if [ "$1" != "" -a "$1" != "stable" -a "$1" != "testing" -a "$1" != "debug" -a "$1" != "useRepo" -a "$1" != "doNotImport" ]
 then
-    pathOfMunkiRepo="$1"
+    munkiTestingPath="$1"
 fi
 
 ####### HELP AND DEBUG ######
@@ -40,9 +40,9 @@ if [ "$1" == "help" -o "$1" == "--help" ]
 then
     echo
     echo "Parameters are: [ ThePathOfTheSoftwareDirectory | stable | testing | useRepo | doNotImport | debug | help | --help ]"
-    echo "Example 1: $0 '$pathOfMunkiRepo' stable"
-    echo "Example 2: $0 '$pathOfMunkiRepo' debug"
-    echo "Example 3: $0 '$pathOfMunkiRepo'"
+    echo "Example 1: $0 '$munkiTestingPath' stable"
+    echo "Example 2: $0 '$munkiTestingPath' debug"
+    echo "Example 3: $0 '$munkiTestingPath'"
     echo "Example 4: $0"
     echo
     exit 0
@@ -182,15 +182,7 @@ then
     echo "OK, waiting 5 seconds and change the repositorys ..."
     echo
 
-    set -x
-    df -h "$munkiStablePath"
-    sleep 5
-    rm -rf "$munkiStablePath"
-    mv "$munkiTestingPath" "$munkiStablePath"
-    ln -s "$munkiStablePath" "$munkiTestingPath"
-    chmod -R a+rx "$munkiStablePath"
-    df -h "$munkiStablePath"
-    set +x
+    (set -x /bin/bash `dirname $0`"make_munki_testing_to_stable.sh move")
 
     echo
     echo "The new Munki repository is now found on the STABLE and testing URL."

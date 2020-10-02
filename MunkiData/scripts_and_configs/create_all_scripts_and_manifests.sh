@@ -36,8 +36,8 @@ echo '# group_name : protected_munki_software : munki_catalog #' > ${ACCESSGROUP
 for i in $(ls -1d "${pathOfSoftware}"'/'* | grep -v '.txt$\|.asc$')
 do
 	if [ "$1" == '--debug' ]
-		then "${pathOfScripts}/create_munki_import_and_remove_scripts.sh" "$1" $i "${pathOfMunkiRepo}"; echo
-		else "${pathOfScripts}/create_munki_import_and_remove_scripts.sh" $i "${pathOfMunkiRepo}"
+		then "${pathOfScripts}/create_munki_import_and_remove_scripts.sh" "$1" $i "${munkiTestingPath}"; echo
+		else "${pathOfScripts}/create_munki_import_and_remove_scripts.sh" $i "${munkiTestingPath}"
 	fi
 done
 

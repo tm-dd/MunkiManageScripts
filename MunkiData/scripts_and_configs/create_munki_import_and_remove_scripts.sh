@@ -56,7 +56,7 @@ MunkiRepoPath="$2"
 # if not set, use the default $MunkiRepoPath
 if [ ! -d "$MunkiRepoPath" ]
 then
-    MunkiRepoPath="$pathOfMunkiRepo"
+    MunkiRepoPath="${munkiTestingPath}"
 fi
 
 ########################################
@@ -309,9 +309,12 @@ echo ''
             echo 'echo "   Require group '$ALLOWEDGROUPS'" >> $HTACCESSFILE'  >> $OutfileMunkiImport
             echo -e 'echo "</Files>" >> $HTACCESSFILE'"\n"  >> $OutfileMunkiImport
 
-            # eine Warnung ausgeben, falls AuthUserFile und AuthGroupFile nicht existieren
-            echo 'if [ ! -e "'${HTUSERSFILE}'" ]; then echo "INFORMATION: AuthUserFile '${HTUSERSFILE}' not found. Please create it later."; fi' >> $OutfileMunkiImport
-            echo -e 'if [ ! -e "'${HTGROUPSFILE}'" ]; then echo "INFORMATION: AuthGroupFile '${HTGROUPSFILE}' not found. Please create it later."; fi'"\n" >> $OutfileMunkiImport
+            # falls DEBUG gewuenscht, eine Warnung ausgeben, falls AuthUserFile und AuthGroupFile nicht existieren (dazu muss der Pfad zu den .ht*-Dateien aber stimmen)
+            if [ "$DEBUG" == "1" ]
+            then
+                echo 'if [ ! -e "'${HTUSERSFILE}'" ]; then echo "DEBUG: AuthUserFile '${HTUSERSFILE}' not found. Please create it later."; fi' >> $OutfileMunkiImport
+                echo -e 'if [ ! -e "'${HTGROUPSFILE}'" ]; then echo "DEBUG: AuthGroupFile '${HTGROUPSFILE}' not found. Please create it later."; fi'"\n" >> $OutfileMunkiImport
+            fi
             
             # erstelle eine Datei, welche alle Gruppen fuer die spaetere ".htgroups" enthaellt (nicht sehr effizient, aber funktional)
             touch $ACCESSGROUPFILE

@@ -27,45 +27,56 @@
 pathOfMunkiData='/usr/local/MunkiData'
 pathOfScripts="${pathOfMunkiData}"'/scripts_and_configs'
 pathOfSoftware="${pathOfMunkiData}"'/software'
-pathOfMunkiRepo='/Library/WebServer/Documents/testing'
+pathOfMunkiRepo='/Volumes/munki/repositories'
 
-# the testing and the stable path of the Munki database
-munkiTestingPath="${pathOfMunkiRepo}"
-munkiStablePath='/Library/WebServer/Documents/repo'
+# the testing repository path of the Munki database
+munkiTestingName="testing"
+munkiTestingPath="${pathOfMunkiRepo}/${munkiTestingName}"
+
+# the stable repository path of the Munki database
+munkiStableName="repo"
+munkiStablePath="${pathOfMunkiRepo}/${munkiStableName}"
+
+# command to sync the stable to the testing repository
+# syncStableToTestingCommand="rsync -av --delete ${munkiStablePath}/ ${munkiTestingPath}/"
+syncStableToTestingCommand="ssh root@munki.example.org rsync -av --delete /var/www/munki/repositories/${munkiStableName}/ /var/www/munki/repositories/${munkiTestingName}/"
 
 # the csv file with all informations about the repository
-FileMunkiInfos=${pathOfScripts}'/munki_infos.csv'
+FileMunkiInfos="${pathOfScripts}/munki_infos.csv"
 
 # the csv file, which definde the munki presets
-MunkiManifestConfig=${pathOfScripts}'/munki_manifests.csv'
+MunkiManifestConfig="${pathOfScripts}/munki_manifests.csv"
 
 # folder of internal files for the import
-munkiInternalFiles=${pathOfMunkiData}'/munki_repo_preset_icon_and_config_files'
+munkiInternalFiles="${pathOfMunkiData}/munki_repo_preset_icon_and_config_files"
 
 # PATH of uninstall scripts or packages on the munki server
-UNINSTALLFILESPATH=${munkiInternalFiles}'/uninstall_scripts'
+UNINSTALLFILESPATH="${munkiInternalFiles}/uninstall_scripts"
 
 # PATH of install check scripts on the munki server
-INSTALLCHECKSCRIPTSPATH=${munkiInternalFiles}'/installcheck_scripts'
+INSTALLCHECKSCRIPTSPATH="${munkiInternalFiles}/installcheck_scripts"
 
 # this file contains all group names for the '.htgroups' file, to protect software for unallowed access
-ACCESSGROUPFILE=${munkiInternalFiles}'/htgroups_and_protected_software.config'
+ACCESSGROUPFILE="${pathOfScripts}/htgroups_and_protected_software.config"
 
 # folder for the munki manifests (the files will be created based on the csv file)
-munkiManifestOffsets=${munkiInternalFiles}'/munki_manifests'
+munkiManifestOffsets="${munkiInternalFiles}/munki_manifests"
 
 # folder for the munki manifests (the files will be created based on the csv file)
-munkiIconOffsets=${munkiInternalFiles}'/icons_offset'
+munkiIconOffsets="${munkiInternalFiles}/icons_offset"
 
 # list of all manifest which include other catalogs
-INCLUDEDCATALOGSFILE=${munkiInternalFiles}'/included_manifests.config'
+INCLUDEDCATALOGSFILE="${munkiInternalFiles}/included_manifests.config"
 
 # the file with logins and password hashes for accounts
-HTUSERSFILE=${pathOfScripts}'/.htusers'
+HTUSERSFILE='/var/www/munki/.htusers'
 
 # this file which contains the groups for htaccess and her accounts
-HTGROUPSFILE=${pathOfScripts}'/.htgroups'
+HTGROUPSFILE='/var/www/munki/.htgroups'
 
 # backup file with clear text passwords
-MUNKIPASSWORDLOGFILE=${pathOfScripts}'/munki-passwords.txt'
-SAVECLEARTEXTPASSWORDS="y"
+MUNKIPASSWORDLOGFILE='/root/munki-passwords.txt'
+SAVECLEARTEXTPASSWORDS='y'
+
+# Munki url
+MUNKIURL='https://munki.example.org/repo/'

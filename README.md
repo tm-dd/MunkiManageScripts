@@ -3,6 +3,18 @@
 Some (quick and dirty) scripts to manage a Munki repository, based on CSV files.
 I currently manage more the hundert Macs with nearly 400 possible Applications, based on Munki with this simple bash scripts.
 
+## WHY not use MunkiAdmin ?
+
+On smaler software repositories it should be easier to use MunkiAdmin.
+
+But if you need:
+* to update more the 100 packages
+* to configure access to commercial packages to different clients (with a tool)
+* to define a lot of different Munki manifests
+
+it could be much easier to use MunkiManageScripts manage your repository
+It define the rules in text files and have scripts from updating whole repository to single packages.
+
 ## How it works:
 
 The script **create_munki_import_and_remove_scripts.sh** create scripts for importing and removing of your defined software in "munki_infos.csv".
@@ -29,7 +41,7 @@ For **all of your applications** you can **define the following settings** in th
 
 With the script **manage_software_access.sh** you can **configure your** clients and allow or permit the download of **commercial licences**. 
 
-## Please view the following video demonstration:
+## Please view the following video demonstration (with scripts versions before 2020-10-02):
 
 http://developer.thomastrid.de/Example_Using_MunkiManageScripts.mp4
 
@@ -50,5 +62,6 @@ http://developer.thomastrid.de/Example_Using_MunkiManageScripts.mp4
 
 * Avoid using of the charter '-' in combination of numbers (like adobe_il_2020-01-13_en_Install.dmg) in Munki packages. Sometimes Munki could to find this software, later.
 * Do not use the String combination '","' in the description CSV files, because this is the delimiter of the fields. Please use '" , "' or other combinations instead.
+
 
 Thomas Mueller <><
