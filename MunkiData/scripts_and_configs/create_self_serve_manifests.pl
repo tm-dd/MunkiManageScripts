@@ -163,8 +163,8 @@ sub updateSelfServeManifests
 			my $managedInstalls = @$line[2];
 			my $managedUninstalls = @$line[3];
 
-			if ( "$managedInstalls" ne " " ) { print SHELLSCRIPT "defaults write $selfServeManifestsFolder/$nameOfSelfServeManifestsToUpdate managed_installs -array-add '$managedInstalls'\n"; }
-			if ( "$managedUninstalls" ne " " ) { print SHELLSCRIPT "defaults write $selfServeManifestsFolder/$nameOfSelfServeManifestsToUpdate managed_uninstalls -array-add '$managedUninstalls'\n"; }
+			if ( "$managedInstalls" ne " " ) { print SHELLSCRIPT "defaults write $selfServeManifestsFolder/$nameOfSelfServeManifestsToUpdate managed_installs -array-add ".'"'."$managedInstalls".'"'."\n"; }
+			if ( "$managedUninstalls" ne " " ) { print SHELLSCRIPT "defaults write $selfServeManifestsFolder/$nameOfSelfServeManifestsToUpdate managed_uninstalls -array-add ".'"'."$managedUninstalls".'"'."\n"; }
 			if ( "$includeSelfServeManifests" ne " " ) { updateSelfServeManifests($nameOfSelfServeManifestsToUpdate,$includeSelfServeManifests,$referenceOfCsvArrayOfAllFields); }
 		}
 	}
@@ -191,8 +191,8 @@ sub writeSelfServeManifests
 		my $managedInstalls = @$line[2];
 		my $managedUninstalls = @$line[3];
 
-		if ( "$managedInstalls" ne " " ) { print SHELLSCRIPT "defaults write $selfServeManifestsFolder/$nameOfSelfServeManifests managed_installs -array-add '$managedInstalls'\n"; }
-		if ( "$managedUninstalls" ne " " ) { print SHELLSCRIPT "defaults write $selfServeManifestsFolder/$nameOfSelfServeManifests managed_uninstalls -array-add '$managedUninstalls'\n"; }
+		if ( "$managedInstalls" ne " " ) { print SHELLSCRIPT "defaults write $selfServeManifestsFolder/$nameOfSelfServeManifests managed_installs -array-add ".'"'."$managedInstalls".'"'."\n"; }
+		if ( "$managedUninstalls" ne " " ) { print SHELLSCRIPT "defaults write $selfServeManifestsFolder/$nameOfSelfServeManifests managed_uninstalls -array-add ".'"'."$managedUninstalls".'"'."\n"; }
 		if ( "$includeSelfServeManifests" ne " " ) { updateSelfServeManifests($nameOfSelfServeManifests,$includeSelfServeManifests,$referenceOfCsvArrayOfAllFields); }
 	}
 
